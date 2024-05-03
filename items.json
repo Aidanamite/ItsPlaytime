@@ -1,0 +1,629 @@
+{
+  "array": [
+    {
+      "Id": "BakingSodaVinegar",
+      "Name": "",
+      "InInventory": false
+    },
+    {
+      "Id": "SugarVinegar",
+      "Name": "",
+      "InInventory": false
+    },
+    {
+      "Id": "DeathsongAmber",
+      "Name": "Amber",
+      "InInventory": true
+    },
+    {
+      "Id": "FirewoodAsh",
+      "Name": "Ashes",
+      "InInventory": true
+    },
+    {
+      "Id": "BakingSoda",
+      "Name": "Baking Soda",
+      "InInventory": true
+    },
+    {
+      "Id": "BakingSodaContainer",
+      "Name": "Baking Soda",
+      "InInventory": true
+    },
+    {
+      "Id": "BakingSodaBase",
+      "Name": "BakingSodaBase",
+      "InInventory": true
+    },
+    {
+      "Id": "Dough",
+      "Name": "Ball of Dough",
+      "InInventory": true
+    },
+    {
+      "Id": "BlueGlass",
+      "Name": "Blue Glass",
+      "InInventory": true
+    },
+    {
+      "Id": "Cabbage",
+      "Name": "Cabbage",
+      "InInventory": true
+    },
+    {
+      "Id": "Chocolate",
+      "Name": "Chocolate",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedChromite",
+      "Name": "Chromite",
+      "InInventory": false
+    },
+    {
+      "Id": "Chromite",
+      "Name": "Chromite",
+      "InInventory": true
+    },
+    {
+      "Id": "BurntCoal",
+      "Name": "Coal",
+      "InInventory": false
+    },
+    {
+      "Id": "Coal",
+      "Name": "Coal",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedCobalt",
+      "Name": "Cobalt",
+      "InInventory": false
+    },
+    {
+      "Id": "Cobalt",
+      "Name": "Cobalt",
+      "InInventory": true
+    },
+    {
+      "Id": "CopperCoin",
+      "Name": "Coin",
+      "InInventory": true
+    },
+    {
+      "Id": "SpectrumCopperHeated",
+      "Name": "Copper",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumCopper",
+      "Name": "Copper",
+      "InInventory": true
+    },
+    {
+      "Id": "DissolvedAmber",
+      "Name": "Dissolved Amber",
+      "InInventory": false
+    },
+    {
+      "Id": "FireBlanket",
+      "Name": "Fire Blanket",
+      "InInventory": true
+    },
+    {
+      "Id": "Firewood",
+      "Name": "Firewood",
+      "InInventory": true
+    },
+    {
+      "Id": "Poison",
+      "Name": "Flame Whipper Residue",
+      "InInventory": true
+    },
+    {
+      "Id": "SpectrumFogHeated",
+      "Name": "Fog Sample",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumFog",
+      "Name": "Fog Sample",
+      "InInventory": true
+    },
+    {
+      "Id": "LiquidGlass_Manganese",
+      "Name": "Glass",
+      "InInventory": false
+    },
+    {
+      "Id": "LiquidGlass_Cobalt",
+      "Name": "Glass",
+      "InInventory": false
+    },
+    {
+      "Id": "LiquidGlass_Chromite",
+      "Name": "Glass",
+      "InInventory": false
+    },
+    {
+      "Id": "Glass",
+      "Name": "Glass",
+      "InInventory": true
+    },
+    {
+      "Id": "LiquidGlass",
+      "Name": "Glass",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedGold",
+      "Name": "Gold",
+      "InInventory": false
+    },
+    {
+      "Id": "Gold",
+      "Name": "Gold",
+      "InInventory": true
+    },
+    {
+      "Id": "GreenGlass",
+      "Name": "Green Glass",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedGronckleIron",
+      "Name": "Gronckle Iron",
+      "InInventory": false
+    },
+    {
+      "Id": "GronckleIron",
+      "Name": "Gronckle Iron",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedGronckleIronAlloy",
+      "Name": "Gronckle Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "Gypsum",
+      "Name": "Gypsum",
+      "InInventory": true
+    },
+    {
+      "Id": "HerbalTea",
+      "Name": "Herbal Tea",
+      "InInventory": false
+    },
+    {
+      "Id": "HydrochloricBottle",
+      "Name": "Hydrochloric Acid",
+      "InInventory": true
+    },
+    {
+      "Id": "HydrochloricSalt",
+      "Name": "Hydrochloric Acid",
+      "InInventory": false
+    },
+    {
+      "Id": "HydrochloricAcid",
+      "Name": "Hydrochloric Acid",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumHydrogenHeated",
+      "Name": "Hydrogen",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumHydrogen",
+      "Name": "Hydrogen",
+      "InInventory": true
+    },
+    {
+      "Id": "Ice",
+      "Name": "Ice",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedIron",
+      "Name": "Iron",
+      "InInventory": false
+    },
+    {
+      "Id": "Iron",
+      "Name": "Iron",
+      "InInventory": true
+    },
+    {
+      "Id": "IronAlloy_Sandstone",
+      "Name": "Iron Alloy",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedIronAlloy_Sandstone",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "IronAlloy_M",
+      "Name": "Iron Alloy",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedIronAlloy_M",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedTinAlloy_S",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedTinAlloy_G",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedWhiteGold",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedIronAlloy_T",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedIronAlloy_S",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedIronAlloy_G",
+      "Name": "Iron Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "Lava",
+      "Name": "Lava",
+      "InInventory": true
+    },
+    {
+      "Id": "LemonAcid",
+      "Name": "Lemon Juice",
+      "InInventory": true
+    },
+    {
+      "Id": "Lemon Juice",
+      "Name": "Lemon Juice",
+      "InInventory": false
+    },
+    {
+      "Id": "Limestone",
+      "Name": "Limestone",
+      "InInventory": true
+    },
+    {
+      "Id": "LiquidChocolateDiluted",
+      "Name": "LiquidChocolate",
+      "InInventory": false
+    },
+    {
+      "Id": "LiquidChocolate",
+      "Name": "LiquidChocolate",
+      "InInventory": false
+    },
+    {
+      "Id": "BurntBread",
+      "Name": "Loaf of Bread",
+      "InInventory": false
+    },
+    {
+      "Id": "Bread",
+      "Name": "Loaf of Bread",
+      "InInventory": false
+    },
+    {
+      "Id": "LobeliaPlant",
+      "Name": "Lobelia Flower",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedManganese",
+      "Name": "Manganese",
+      "InInventory": false
+    },
+    {
+      "Id": "Manganese",
+      "Name": "Manganese",
+      "InInventory": true
+    },
+    {
+      "Id": "Marble",
+      "Name": "Marble",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedAmber",
+      "Name": "Melted Amber",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedCopper",
+      "Name": "Melted Copper",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedSalt",
+      "Name": "Melted Salt",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedSugar",
+      "Name": "Melted Sugar",
+      "InInventory": false
+    },
+    {
+      "Id": "LiquidMixture",
+      "Name": "Mixture",
+      "InInventory": false
+    },
+    {
+      "Id": "MysteryAlloy_S",
+      "Name": "Mystery Alloy",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedMysteryAlloy_S",
+      "Name": "Mystery Alloy",
+      "InInventory": false
+    },
+    {
+      "Id": "MeltedMysteryRock",
+      "Name": "Mystery Black Rock",
+      "InInventory": false
+    },
+    {
+      "Id": "MysteryRock",
+      "Name": "Mystery Black Rock",
+      "InInventory": true
+    },
+    {
+      "Id": "FrozenOil",
+      "Name": "Oil",
+      "InInventory": false
+    },
+    {
+      "Id": "BurntLiquidOil",
+      "Name": "Oil",
+      "InInventory": false
+    },
+    {
+      "Id": "LiquidOil",
+      "Name": "Oil",
+      "InInventory": false
+    },
+    {
+      "Id": "Oil",
+      "Name": "Oil",
+      "InInventory": true
+    },
+    {
+      "Id": "SpectrumOxygenHeated",
+      "Name": "Oxygen",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumOxygen",
+      "Name": "Oxygen",
+      "InInventory": true
+    },
+    {
+      "Id": "BurntPaper",
+      "Name": "Paper",
+      "InInventory": false
+    },
+    {
+      "Id": "Paper",
+      "Name": "Paper",
+      "InInventory": true
+    },
+    {
+      "Id": "PurpleGlass",
+      "Name": "Purple Glass",
+      "InInventory": true
+    },
+    {
+      "Id": "Burnt Rock Salt",
+      "Name": "Rock Salt",
+      "InInventory": false
+    },
+    {
+      "Id": "Rock Salt",
+      "Name": "Rock Salt",
+      "InInventory": true
+    },
+    {
+      "Id": "Rubber",
+      "Name": "Rubber",
+      "InInventory": true
+    },
+    {
+      "Id": "Salt",
+      "Name": "Salt",
+      "InInventory": false
+    },
+    {
+      "Id": "SaltContainer",
+      "Name": "Salt",
+      "InInventory": true
+    },
+    {
+      "Id": "SaltBakingSoda",
+      "Name": "Salt BakingSoda Mix",
+      "InInventory": true
+    },
+    {
+      "Id": "SaltLemonJuice",
+      "Name": "Salt Lemon Juice Mix",
+      "InInventory": false
+    },
+    {
+      "Id": "SaltVinegar",
+      "Name": "Salt Vinegar Mix",
+      "InInventory": false
+    },
+    {
+      "Id": "BakingSodaWater",
+      "Name": "Salt Water",
+      "InInventory": false
+    },
+    {
+      "Id": "SaltWater",
+      "Name": "Salt Water",
+      "InInventory": false
+    },
+    {
+      "Id": "Sandstone",
+      "Name": "Sandstone",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedSilver",
+      "Name": "Silver",
+      "InInventory": false
+    },
+    {
+      "Id": "Silver",
+      "Name": "Silver",
+      "InInventory": true
+    },
+    {
+      "Id": "SkullcapPlant",
+      "Name": "Skullcap Flower",
+      "InInventory": true
+    },
+    {
+      "Id": "Soap",
+      "Name": "Soap",
+      "InInventory": true
+    },
+    {
+      "Id": "Sugar",
+      "Name": "Sugar",
+      "InInventory": false
+    },
+    {
+      "Id": "SugarContainer",
+      "Name": "Sugar",
+      "InInventory": true
+    },
+    {
+      "Id": "SugarLemonJuice",
+      "Name": "Sugar Lemon Juice Mix",
+      "InInventory": false
+    },
+    {
+      "Id": "SugarWater",
+      "Name": "Sugar Water",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumSulfurHeated",
+      "Name": "Sulfur",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumSulfur",
+      "Name": "Sulfur",
+      "InInventory": true
+    },
+    {
+      "Id": "SweetDeathSpit",
+      "Name": "Sweet Death Saliva",
+      "InInventory": true
+    },
+    {
+      "Id": "Burnt Sylvite",
+      "Name": "Sylvite",
+      "InInventory": false
+    },
+    {
+      "Id": "Sylvite",
+      "Name": "Sylvite",
+      "InInventory": true
+    },
+    {
+      "Id": "TestSpectrumItemHeated",
+      "Name": "Test Object",
+      "InInventory": false
+    },
+    {
+      "Id": "TestSpectrumItemUnHeated",
+      "Name": "Test Object",
+      "InInventory": true
+    },
+    {
+      "Id": "MeltedTin",
+      "Name": "Tin",
+      "InInventory": false
+    },
+    {
+      "Id": "Tin",
+      "Name": "Tin",
+      "InInventory": true
+    },
+    {
+      "Id": "Burnt Tolbachite",
+      "Name": "Tolbachite",
+      "InInventory": false
+    },
+    {
+      "Id": "Tolbachite",
+      "Name": "Tolbachite",
+      "InInventory": true
+    },
+    {
+      "Id": "VinegarVial",
+      "Name": "Vinegar",
+      "InInventory": true
+    },
+    {
+      "Id": "VinegarBottle",
+      "Name": "Vinegar",
+      "InInventory": true
+    },
+    {
+      "Id": "Vinegar",
+      "Name": "Vinegar",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumWaterHeated",
+      "Name": "Water",
+      "InInventory": false
+    },
+    {
+      "Id": "SpectrumWater",
+      "Name": "Water",
+      "InInventory": true
+    },
+    {
+      "Id": "Water",
+      "Name": "Water",
+      "InInventory": false
+    },
+    {
+      "Id": "BurntWood",
+      "Name": "Wood",
+      "InInventory": false
+    },
+    {
+      "Id": "Wood",
+      "Name": "Wood",
+      "InInventory": true
+    }
+  ]
+}

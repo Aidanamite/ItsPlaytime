@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,11 +14,18 @@ using UnityEngine;
 using System.IO;
 using static BundlesData.Category;
 using Object = UnityEngine.Object;
+using Debug = UnityEngine.Debug;
+using Label = System.Reflection.Emit.Label;
 using UnityEngine.UIElements;
+using Microsoft.Cci;
+using static UnityEngine.Networking.UnityWebRequest;
+using System.Runtime.Serialization;
+using ShatterToolkit;
+using System.Security.Permissions;
 
 namespace ItsPlaytime
 {
-    [BepInPlugin("com.aidanamite.ItsPlaytime", "It's Playtime", "1.0.0")]
+    [BepInPlugin("com.aidanamite.ItsPlaytime", "It's Playtime", "1.1.0")]
     public class Main : BaseUnityPlugin
     {
         [Serializable]
@@ -165,8 +173,10 @@ namespace ItsPlaytime
             ("Element Match", "ElementMatchDO", null, "element")
         };
         public static Dictionary<string, LoadAsmBundle> BundleOverrides = new Dictionary<string, LoadAsmBundle>();
+        public static Main instance;
         public void Awake()
         {
+            instance = this;
             var a = Assembly.GetExecutingAssembly();
             foreach (var i in a.GetManifestResourceNames())
                 if (i.ToLowerInvariant().EndsWith(".bundle"))
@@ -196,12 +206,215 @@ namespace ItsPlaytime
             t.LoadImage(b,false);
             return t;
         }
+
+        public static (ExperimentType lab, string name)[] Labs = new[]
+        {
+            (ExperimentType.NORMAL, "Basic Lab"),
+            (ExperimentType.GRONCKLE_IRON, "Gronkle Iron Lab"),
+            (ExperimentType.SKRILL_LAB, "Skrill Lab"),
+            (ExperimentType.MAGNETISM_LAB, "Magnetism Lab"),
+            (ExperimentType.SPECTRUM_LAB, "Spectrum Lab"),
+            (ExperimentType.TITRATION_LAB, "Titration Lab")
+        };
+        void OnConfirmFreeplay()
+        {
+            KAUICursorManager.SetDefaultCursor("Loading", true);
+            UiNameSuggestion.mSuggestedNames = Labs.Select(x => x.name).ToArray();
+            UiNameSuggestion.mNameSelectedCallback = y =>
+            {
+                if (string.IsNullOrEmpty(y))
+                {
+                    OnPopupClose();
+                    return;
+                }
+                Patch_GetLabExperimentByID.Freeplay.UpdateFreeplayMode(Labs.FirstOrDefault(x => x.name == y).lab);
+                var use = Patch_GetLabExperimentByID.Freeplay.CanUsePet(SanctuaryManager.pCurPetInstance);
+                if (use != ExperimentSuitable.Suitable)
+                {
+                    GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "Your dragon " + (
+                        use == ExperimentSuitable.Species
+                        ? "is not a suitable species"
+                        : use == ExperimentSuitable.Breath
+                        ? Patch_GetLabExperimentByID.Freeplay.BreathType == (int)WeaponTuneData.AmmoType.FIRE ? "must breath fire" : "must breath lightning"
+                        : use == ExperimentSuitable.Age
+                        ? "is too young"
+                        : use == ExperimentSuitable.Missing
+                        ? "must exist"
+                        : "is not suitable"
+                        ) + " for the " + y, gameObject, "OnPopupClose", true);
+                }
+                else if (Patch_GetLabExperimentByID.Freeplay.Items == null)
+                    LabData.Load(new LabData.XMLLoaderCallback(x =>
+                    {
+                        if (x)
+                        {
+                            OnPopupClose();
+                            ScientificExperiment.pActiveExperimentID = Patch_GetLabExperimentByID.Freeplay.ID;
+                            Patch_InitializeExperiment.UseExperimentID = true;
+                            labPortal.Item1.SendMessage("LoadLab");
+                        }
+                        else
+                            GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "Lab data failed to load", gameObject, "OnPopupClose", true);
+                    }));
+                else
+                {
+                    OnPopupClose();
+                    ScientificExperiment.pActiveExperimentID = Patch_GetLabExperimentByID.Freeplay.ID;
+                    Patch_InitializeExperiment.UseExperimentID = true;
+                    labPortal.Item1.SendMessage("LoadLab");
+                }
+            };
+            RsResourceManager.LoadAssetFromBundle(GameConfig.GetKeyData("NameSuggestionAsset"), (a,b,c,d,e) =>
+            {
+                if (b == RsResourceLoadEvent.ERROR)
+                {
+                    UiNameSuggestion.mSuggestedNames = null;
+                    UiNameSuggestion.mNameSelectedCallback = null;
+                    GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "Unable to load selection UI", gameObject, "OnPopupClose", true);
+                }
+                else if (b == RsResourceLoadEvent.COMPLETE)
+                {
+                    KAUICursorManager.SetDefaultCursor("Arrow", true);
+                    var ui = Instantiate((GameObject)d).GetComponent<UiNameSuggestion>();
+                    ui.FindItem("TxtTitle").SetText("Lab Select");//change ui title and text
+                    ui.FindItem("TxtSubHeading").SetText("Which lab would you like to use?");
+                }
+            }, typeof(GameObject), false, null);
+
+            
+        }
+        public static (LabPortalTrigger, Collider) labPortal;
+        void OnConfirmNotFreeplay()
+        {
+            Patch_InitializeExperiment.UseExperimentID = false;
+            OnPopupClose();
+            Patch_TryEnterLab.allow = true;
+            try
+            {
+                labPortal.Item1.OnTriggerEnter(labPortal.Item2);
+            }
+            finally
+            {
+                Patch_TryEnterLab.allow = false;
+                labPortal = default;
+            }
+        }
+        void OnPopupClose()
+        {
+            AvAvatar.pState = AvAvatarState.IDLE;
+            AvAvatar.SetUIActive(true);
+        }
+        void DoNothing() { }
     }
 
     public static class ExtentionMethods
     {
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component => gameObject.GetComponent<T>() ?? gameObject.AddComponent<T>();
         public static T GetOrAddComponent<T>(this Component component) where T : Component => component.GetComponent<T>() ?? component.gameObject.AddComponent<T>();
+
+        public static T MemberwiseClone<T>(this T obj)
+        {
+            if (obj == null)
+                return obj;
+            var t = obj.GetType();
+            var nObj = (T)FormatterServices.GetUninitializedObject(t);
+            var b = typeof(object);
+            while (t != b)
+            {
+                foreach (var f in t.GetFields(~BindingFlags.Default))
+                    if (!f.IsStatic)
+                        f.SetValue(nObj, f.GetValue(obj));
+                t = t.BaseType;
+            }
+            return nObj;
+        }
+
+        public static T DeepMemberwiseClone<T>(this T obj) => obj.DeepMemberwiseClone(new Dictionary<object, object>(), new HashSet<object>());
+        static T DeepMemberwiseClone<T>(this T obj, Dictionary<object, object> cloned, HashSet<object> created)
+        {
+            if (obj == null)
+                return obj;
+            if (cloned.TryGetValue(obj, out var clone))
+                return (T)clone;
+            if (created.Contains(obj))
+                return obj;
+            var t = obj.GetType();
+            if (t.IsPrimitive || t == typeof(string))
+                return obj;
+            if (t.IsArray && obj is Array a)
+            {
+                var c = t.GetConstructors()[0];
+                var o = new object[t.GetArrayRank()];
+                for (int i = 0; i < o.Length; i++)
+                    o[i] = a.GetLength(i);
+                var na = (Array)c.Invoke(o);
+                created.Add(na);
+                cloned[a] = na;
+                for (int i = 0; i < o.Length; i++)
+                    if ((int)o[i] == 0)
+                        return (T)(object)na;
+                var ind = new int[o.Length];
+                var flag = true;
+                while (flag)
+                {
+                    na.SetValue(a.GetValue(ind).DeepMemberwiseClone(cloned, created), ind);
+                    for (int i = 0; i < ind.Length; i++)
+                    {
+                        ind[i]++;
+                        if (ind[i] == (int)o[i])
+                        {
+                            if (i == ind.Length - 1)
+                                flag = false;
+                            ind[i] = 0;
+                        }
+                        else
+                            break;
+                    }
+                }
+                return (T)(object)na;
+            }
+            var nObj = (T)FormatterServices.GetUninitializedObject(t);
+            created.Add(nObj);
+            cloned[obj] = nObj;
+            var b = typeof(object);
+            while (t != b)
+            {
+                foreach (var f in t.GetFields(~BindingFlags.Default))
+                    if (!f.IsStatic)
+                        f.SetValue(nObj, f.GetValue(obj).DeepMemberwiseClone(cloned, created));
+                t = t.BaseType;
+            }
+            return nObj;
+        }
+
+        public static Y GetOrCreate<X,Y>(this IDictionary<X,Y> d, X value) where Y : new()
+        {
+            if (d.TryGetValue(value, out var r))
+                return r;
+            return d[value] = new Y();
+        }
+
+        public static Y GetOrDefault<X, Y>(this IDictionary<X, Y> d, X value, Y fallback = default)
+        {
+            if (d.TryGetValue(value, out var r))
+                return r;
+            return fallback;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Dictionary<T, int> Counts<T>(this IEnumerable<T> c) => c.Counts(x => x);
+        public static Dictionary<Y,int> Counts<X,Y>(this IEnumerable<X> c, Func<X,Y> cast)
+        {
+            var d = new Dictionary<Y, int>();
+            if (c != null)
+                foreach (var i in c)
+                {
+                    var n = cast(i);
+                    d.TryGetValue(n, out var r);
+                    d[n] = r + 1;
+                }
+            return d;
+        }
     }
 
     [HarmonyPatch]
@@ -439,58 +652,6 @@ namespace ItsPlaytime
             }, typeof(GameObject), false, null);
         }
     }
-    /*
-    [HarmonyPatch(typeof(JSGames.UI.UI), "Awake")]
-    static class Patch_UI_Awake
-    {
-        static void Prefix(JSGames.UI.UI __instance)
-        {
-            if (!__instance.GetComponent<RectTransform>())
-            {
-                var r = __instance.gameObject.AddComponent<RectTransform>();
-                r.anchorMin = r.anchorMax = r.pivot = Vector2.zero;
-                r.offsetMin = -(r.offsetMax = new Vector2(700, 437.5f));
-                //r.localScale = Vector3.zero;
-                var a = r.Find("Anchor-Center");
-                var r2 = a.GetOrAddComponent<RectTransform>();
-                r2.anchorMin = r2.anchorMax = r2.pivot = Vector2.one * 0.5f;
-
-            }
-            if (!__instance.GetComponent<Canvas>())
-            {
-                var c = __instance.gameObject.AddComponent<Canvas>();
-                c.worldCamera = Camera.main;
-                c.scaleFactor = 1;
-                c.planeDistance = 100;
-                var s = __instance.gameObject.GetOrAddComponent<UnityEngine.UI.CanvasScaler>();
-                s.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                s.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.Expand;
-                s.matchWidthOrHeight = 0;
-                s.referencePixelsPerUnit = 100;
-                s.referenceResolution = new Vector2(1400, 875);
-                s.scaleFactor = 1;
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(JSGames.UI.UI), "CacheWidgets")]
-    static class Patch_CursorManager_CacheWidgets
-    {
-        static void Postfix(JSGames.UI.UI __instance, Transform cacheTransform)
-        {
-            if (__instance is KAUICursorManager && __instance.transform == cacheTransform)
-            {
-                if (__instance.mChildWidgets.Count == 0)
-                    __instance.mChildWidgets.AddRange(__instance.GetComponentsInChildren<KAWidget>().Where(x => !x.transform.parent?.GetComponent<KAWidget>()).Select(x =>
-                    {
-                        var w = x.GetOrAddComponent<JSGames.UI.UIWidget>();
-                        //w.pVisible = false; // disabled until i fix the weird mouse offset
-                        return w;
-                    }));
-            }
-                
-        }
-    }*/
 
     [HarmonyPatch(typeof(UtWWWAsync))]
     static class Patch_WWWLoadBundle
@@ -563,30 +724,407 @@ namespace ItsPlaytime
             }
             return true;
         }
-        /*
-        [HarmonyPatch("LoadAssetFromBundle", typeof(string), typeof(string), typeof(Type))]
-        [HarmonyPrefix]
-        static bool LoadAssetFromBundle_Prefix(string inBundlePath, string inAssetName, Type inType, ref object __result)
+    }
+
+    [HarmonyPatch(typeof(LabPortalTrigger),"OnTriggerEnter")]
+    static class Patch_TryEnterLab
+    {
+        public static bool allow = false;
+        static bool Prefix(LabPortalTrigger __instance, Collider inCollider)
         {
-            if (Main.BundleOverrides.TryGetValue(inBundlePath.ToLowerInvariant(), out var bundle))
-            {
-                __result = bundle.LoadAsset(inAssetName, inType);
+            if (allow)
+                return true;
+            if (!AvAvatar.IsCurrentPlayer(inCollider.gameObject))
                 return false;
+            AvAvatar.SetUIActive(false);
+            AvAvatar.pState = AvAvatarState.PAUSED;
+            var ui = GameUtilities.CreateKAUIGenericDB("PfKAUIGenericDB", "Entering Lab");
+            ui.SetButtonVisibility(true, true, false, true);
+            Main.labPortal = (__instance,inCollider);
+            ui.SetMessage(Main.instance.gameObject, "OnConfirmFreeplay", "OnConfirmNotFreeplay", null, "OnPopupClose");
+            ui.SetDestroyOnClick(true);
+            ui.SetButtonLabel("YesBtn", "Freeplay");
+            ui.SetButtonLabel("NoBtn", "Experiment");
+            ui.SetText("Would you like to use the lab in freeplay or conduct an experiment?",true);
+            KAUI.SetExclusive(ui, true);
+            return false;
+        }
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.Insert(code.FindIndex(x => x.opcode == OpCodes.Ldsfld && x.operand is FieldInfo f && f.Name == "pUseExperimentCheat") + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_InitializeExperiment), "UseId")));
+            return code;
+        }
+    }
+
+    [HarmonyPatch(typeof(ScientificExperiment),"Initialize")]
+    static class Patch_InitializeExperiment
+    {
+        public static bool UseExperimentID = false;
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.Insert(code.FindIndex(x => x.opcode == OpCodes.Ldsfld && x.operand is FieldInfo f && f.Name == "pUseExperimentCheat") + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_InitializeExperiment), nameof(UseId))));
+            var ind = code.FindIndex(code.FindIndex(x => x.opcode == OpCodes.Ldfld && x.operand is FieldInfo f && f.Name == "mCreatedDragon"), x => x.opcode.FlowControl == FlowControl.Cond_Branch) + 1;
+            code.RemoveRange(ind, code.FindIndex(ind, x => x.labels.Contains((Label)code[ind - 1].operand)) - ind);
+            code.InsertRange(ind, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(Patch_InitializeExperiment),nameof(HandleDragonInitialize)))
+            });
+            return code;
+        }
+        static bool UseId(bool original) => original || UseExperimentID;
+        static void HandleDragonInitialize(ScientificExperiment instance)
+        {
+            void PlaceDragonAside()
+            {
+                SanctuaryManager.pCurPetInstance.PlayAnimation("IdleSit", WrapMode.Loop, 1f, 0.2f);
+                Transform dragonMarker = instance.GetDragonMarker(SanctuaryManager.pCurPetInstance.pTypeInfo._Name, SanctuaryManager.pCurPetInstance.pCurAgeData._Name, true);
+                if (dragonMarker != null)
+                {
+                    SanctuaryManager.pCurPetInstance.SetPosition(dragonMarker.position);
+                    SanctuaryManager.pCurPetInstance.transform.rotation = dragonMarker.rotation;
+                    SanctuaryManager.pCurPetInstance.transform.localScale = Vector3.one * SanctuaryManager.pCurPetInstance.pCurAgeData._LabScale;
+                }
             }
-            return true;
+            void InitCustomGronckleExp()
+            {
+                instance._Gronckle.gameObject.SetActive(true);
+                instance._Gronckle.Init(instance);
+                var component = instance._Gronckle.GetComponent<SanctuaryPet>();
+                component.Init(SanctuaryManager.pCurPetInstance.pData, false, null);
+                instance.SetCurrentDragon(component);
+            }
+            if (SanctuaryManager.pCurPetData != null && !SanctuaryManager.pCurPetInstance)
+                return;
+            var use = instance.mExperiment.CanUsePet(SanctuaryManager.pCurPetInstance);
+            if (use == ExperimentSuitable.Suitable)
+            {
+                if (instance.mExperiment.Type == (int)ExperimentType.GRONCKLE_IRON)
+                    InitCustomGronckleExp();
+                else
+                    instance.SetCurrentDragon(SanctuaryManager.pCurPetInstance);
+            }
+            else
+            {
+                if (use != ExperimentSuitable.Missing && SanctuaryManager.pCurPetInstance.pAge == 0)
+                    PlaceDragonAside();
+                if (instance.mExperiment.Type == (int)ExperimentType.GRONCKLE_IRON)
+                    instance.InitGronckleExp();
+                else
+                    instance.CreateDragon(instance.mExperiment.DragonType, instance.mExperiment.DragonStage, instance.mExperiment.DragonGender);
+            }
+            instance.mCreatedDragon = true;
+        }
+        public static ExperimentSuitable CanUsePet(this Experiment experiment, SanctuaryPet pet)
+        {
+            if (!pet)
+                return ExperimentSuitable.Missing;
+            if (experiment != null)
+            {
+                if (experiment.Type == (int)ExperimentType.GRONCKLE_IRON && pet.pData.PetTypeID != 13)
+                    return ExperimentSuitable.Species;
+                if (experiment.ForceDefaultDragon && pet.pData.PetTypeID != experiment.DragonType)
+                    return ExperimentSuitable.Species;
+                if (experiment.BreathType != (int)pet.pWeaponManager.GetCurrentWeapon()._AmmoType && !(experiment.BreathType == (int)WeaponTuneData.AmmoType.FIRE && pet.pWeaponManager.GetCurrentWeapon()._AmmoType == WeaponTuneData.AmmoType.ELECTRIC))
+                    return ExperimentSuitable.Breath;
+            }
+            if (pet.pAge == 0)
+                return ExperimentSuitable.Age;
+            return ExperimentSuitable.Suitable;
+        }
+        public static void UpdateFreeplayMode(this Experiment exp, ExperimentType type)
+        {
+            exp.Type = (int)type;
+            exp.BreathType = (int)(type == ExperimentType.SKRILL_LAB ? WeaponTuneData.AmmoType.ELECTRIC : WeaponTuneData.AmmoType.FIRE);
+        }
+    }
+
+    public enum ExperimentSuitable
+    {
+        Suitable,
+        Species,
+        Breath,
+        Age,
+        Missing
+    }
+
+    [HarmonyPatch(typeof(RsResourceManager), "LoadAssetFromBundle", typeof(string), typeof(string), typeof(RsResourceEventHandler), typeof(Type), typeof(bool), typeof(object))]
+    static class Patch_LabItemLoad
+    {
+        static void Prefix(ref RsResourceEventHandler inCallback)
+        {
+            if (!ScientificExperiment.pInstance)
+                return;
+            var original = inCallback;
+            inCallback = (a, b, c, d, e) =>
+            {
+                if (b == RsResourceLoadEvent.ERROR)
+                {
+                    b = RsResourceLoadEvent.COMPLETE;
+                    d = null;
+                }
+                original?.Invoke(a, b, c, d, e);
+            };
+        }
+    }
+
+    [HarmonyPatch(typeof(RsResourceManager), "Load")]
+    static class Patch_LogAsset
+    {
+        static void Prefix(ref RsResourceEventHandler inCallback)
+        {
+            if (!ScientificExperiment.pInstance)
+                return;
+            var original = inCallback;
+            inCallback = (a, b, c, d, e) =>
+            {
+                if (b == RsResourceLoadEvent.ERROR)
+                {
+                    b = RsResourceLoadEvent.COMPLETE;
+                    d = null;
+                }
+                original?.Invoke(a, b, c, d, e);
+            };
+        }
+    }
+
+    [HarmonyPatch(typeof(ScientificExperiment), "SetCurrentDragon")]
+    static class Patch_SetExperimentDragon
+    {
+        static void Postfix(ScientificExperiment __instance)
+        {
+            if (__instance.mCurrentDragon && Patch_GetDragonLabData.unsupported.Contains(__instance.mCurrentDragon.pTypeInfo._Name))
+                GameUtilities.DisplayOKMessage("PfKAUIGenericDB", "The dragon you're using is unsupported. You may notice some bugs.\n\nSorry :(", Main.instance.gameObject, "DoNothing", true);
+        }
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.InsertRange(code.FindIndex(x => x.opcode == OpCodes.Ldfld && x.operand is FieldInfo f && f.Name == "_PetSkinMapping") + 1, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(Patch_SetExperimentDragon),nameof(GetMapping)))
+            });
+            return code;
         }
 
-        [HarmonyPatch("Load")]
-        [HarmonyPrefix]
-        static bool Load(string inURL, RsResourceEventHandler inCallback, object inUserData, ref object __result)
+        static List<ScientificExperiment.PetSkinMapping> GetMapping(List<ScientificExperiment.PetSkinMapping> original, ScientificExperiment instance) => instance.mCurrentDragon == SanctuaryManager.pCurPetInstance ? null : original;
+    }
+
+    [HarmonyPatch(typeof(LabData))]
+    static class Patch_GetLabExperimentByID
+    {
+        public static Experiment Freeplay = new Experiment()
         {
-            if (Main.BundleOverrides.TryGetValue(inURL.ToLowerInvariant(), out var bundle))
+            ID = -0xABCDE,
+            Name = "Freeplay",
+            Tasks = new LabTask[0],
+            ThermometerMax = 5000,
+            ThermometerMin = -5000
+        };
+
+        [HarmonyPatch("GetLabExperimentByID")]
+        static bool Prefix(int inID, ref Experiment __result)
+        {
+            if (inID != Freeplay.ID)
+                return true;
+            __result = Freeplay;
+            return false;
+        }
+
+        [HarmonyPatch("Initialize")]
+        static void Postfix(LabData __instance)
+        {
+            var h = new Dictionary<string,string>();
+            foreach (var i in __instance.Items)
             {
-                inCallback(RsResourceManager.FormatBundleURL(inURL), RsResourceLoadEvent.COMPLETE, 1, bundle, inUserData);
-                __result = null;
-                return false;
+                if (i?.Name == "FirewoodAsh")
+                    i.Icon = "RS_DATA/CollectDWIcons.unity3d/IcoCollectDWHempFiberPile"; // Fix for an item trying to load an invalid icon
+                if (!string.IsNullOrEmpty(i?.Name) && !string.IsNullOrEmpty(i.DisplayNameText?.GetLocalizedString()) && !string.IsNullOrWhiteSpace(i.Icon) && !string.IsNullOrEmpty(i.Prefab) && i.Prefab.ToLowerInvariant() != "RS_DATA/PfMBLiquid.unity3d/PfMBLiquid".ToLowerInvariant())
+                    h[i.Name] = i.DisplayNameText.GetLocalizedString();
             }
-            return true;
-        }*/
+
+            var sorted = new SortedDictionary<string, string>(new NeverEqual<string>());
+            foreach (var p in h)
+                sorted[p.Value] = p.Key;
+            /*{
+                var valid = new HashSet<string>();
+                var items = new SortedDictionary<string, LabItemHolder>(new NeverEqual<string>());
+                foreach (var i in __instance.Items)
+                    if (!string.IsNullOrEmpty(i?.Name) && !string.IsNullOrEmpty(i.Prefab) && valid.Add(i.Name))
+                    {
+                        var v = new LabItemHolder(i);
+                        v.InInventory = h.ContainsKey(v.Id);
+                        items[v.Name] = v;
+                    }
+                var combos = new HashSet<LabCombinationHolder>();
+                foreach (var cl in __instance.pCombinations)
+                    if (cl.Value != null)
+                        foreach (var c in cl.Value)
+                            if (!string.IsNullOrEmpty(c.ResultItemName) && valid.Contains(c.ResultItemName) && c.ItemNames != null && c.ItemNames.All(x => !string.IsNullOrEmpty(x) && valid.Contains(x)))
+                                combos.Add(new LabCombinationHolder(c));
+                Debug.Log($"Freeplay item count: {h.Count}\n{Newtonsoft.Json.JsonConvert.SerializeObject(new ArrayHolder<LabItemHolder>() { array = items.Values.ToArray() })}\n{Newtonsoft.Json.JsonConvert.SerializeObject(new ArrayHolder<LabCombinationHolder>() { array = combos.ToArray() })}");
+            }*/
+            Freeplay.Items = sorted.Values.ToArray();
+        }
+    }
+
+    public class NeverEqual<T> : IComparer<T> where T : IComparable<T>
+    {
+        int IComparer<T>.Compare(T x, T y) => x.CompareTo(y) == 0 ? -1 : x.CompareTo(y);
+    }
+
+    [Serializable]
+    public class ArrayHolder<T>
+    {
+        public T[] array;
+    }
+
+    [Serializable]
+    public class LabItemHolder
+    {
+        public string Id;
+        public string Name;
+        public bool InInventory;
+        public LabItemHolder(LabItem item)
+        {
+            Id = item.Name;
+            Name = item.DisplayNameText?.GetLocalizedString();
+        }
+    }
+
+    [Serializable]
+    public class LabCombinationHolder
+    {
+        public string Action;
+        public string[] Items;
+        public string Result;
+        public LabCombinationHolder(LabItemCombination combination)
+        {
+            Action = combination.Action;
+            Items = combination.ItemNames;
+            Result = combination.ResultItemName;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is LabCombinationHolder c)
+                return c.Action == Action && c.Items.SequenceEqual(Items) && c.Result == Result;
+            return base.Equals(obj);
+        }
+        public override int GetHashCode() => Action.GetHashCode() ^ ~Result.GetHashCode() ^ Items.Length.GetHashCode();
+    }
+
+    [HarmonyPatch(typeof(UiScienceExperiment))]
+    static class Patch_UiScienceExperiment
+    {
+        [HarmonyPatch("InitializeExperiment")]
+        static void Prefix(UiScienceExperiment __instance)
+        {
+            __instance._ExperimentItemMenu._DefaultGrid.maxPerLine = 255;
+        }
+    }
+
+    [HarmonyPatch(typeof(ScientificExperiment), "Initialize")]
+    static class Patch_GetDragonLabData
+    {
+        static Dictionary<string, string> copy = new Dictionary<string, string>()
+        {
+            {"LightFuryGeneric","LightFury"},
+            {"CrimsonHowler","WoollyHowl"},
+            {"Zipplewraith","Zippleback"},
+            {"Goregripper","DeathGripper"},
+            {"Graveknapper","ScreamingDeath"},
+            {"Abomibumble","Gronckle"},
+            {"Galeslash","DeadlyNadder"},
+            {"Ridgesnipper","Snafflefang"},
+            {"Bonestormer","Boneknapper"},
+            {"Chimeragon","Razorwhip"},
+            {"Slitherwing","Slithersong"},
+            {"Seastormer","Thunderdrum"},
+            {"CavernCrasher","FlameWhipper"},
+            {"Humbanger","WhisperingDeath"},
+            {"GoldenDragon","Scauldron"},
+            {"Hushboggle","Scuttleclaw"},
+            {"Frostmare","Groncicle"},
+            {"Songwing","GrimGnasher"},
+            {"Sandbuster","Windwalker"},
+            {"SwordStealer","ArmorWing"}
+        };
+        public static HashSet<string> unsupported = new HashSet<string>();
+        static ScientificExperiment instance;
+        static void Prefix(ScientificExperiment __instance)
+        {
+            if (instance == __instance)
+                return;
+            instance = __instance;
+            unsupported = new HashSet<string>();
+            foreach (var t in SanctuaryData.pInstance._PetTypes)
+                unsupported.Add(t._Name);
+            var l = __instance._DragonData.ToList();
+            var d = new Dictionary<string, ScientificExperiment.LabDragonData>();
+            foreach (var i in __instance._DragonData)
+                if (unsupported.Remove(i._Name))
+                    d[i._Name] = i;
+            foreach (var i in unsupported)
+            {
+                var n = (copy.TryGetValue(i, out var t) ? d[t] : d["Nightmare"]).MemberwiseClone();
+                n._Name = i;
+                l.Add(n);
+            }
+            __instance._DragonData = l.ToArray();
+        }
+    }
+
+    [HarmonyPatch(typeof(ScientificExperiment), "PlayDragonAnim", typeof(string), typeof(bool), typeof(bool), typeof(float), typeof(Transform))]
+    static class Patch_PlayLabAnimation
+    {
+        static void Postfix(ScientificExperiment __instance,string inAnimName, bool inPlayOnce, bool playIdleNext, float animSpeed, Transform lookAtObject, ref bool __result)
+        {
+            if (!__result
+                && __instance.mCurrentDragon != null
+                && !string.IsNullOrEmpty(inAnimName)
+                && __instance.mCurrentDragon.animation != null
+                && __instance.mCurrentDragon.animation[inAnimName] == null
+                && !__instance.pWaitingForAnimEvent)
+            {
+                string anim = null;
+                if (inAnimName == "LabIdle")
+                    anim = "IdleSit";
+                else if (inAnimName == "LabApprovalResponce")
+                    anim = "Celebrate";
+                else if (inAnimName == "LabNegativeResponce")
+                    anim = "Refuse";
+                else if (inAnimName == "LabBlowFire")
+                    anim = "Attack01";
+                else if (inAnimName == "LabExcited")
+                    anim = "IdleHappy";
+                else if (inAnimName == "LabPullChain")
+                    anim = "Gulp";
+                if (anim != null && __instance.PlayDragonAnim(anim, inPlayOnce, playIdleNext, animSpeed, lookAtObject))
+                    __instance.mCurrentDragon.StartCoroutine(PlayEvents( __instance.mDragonData._AnimEvents,inAnimName));
+            }
+        }
+
+        static IEnumerator PlayEvents(AvAvatarAnimEvent[] events, string anim)
+        {
+            var sort = new List<(AvAvatarAnimEvent a, AnimData b)>();
+            foreach (var a in events)
+                if (a._Animation == anim)
+                    foreach (var e in a._Times)
+                        sort.Add((a, e));
+            sort.Sort((a,b) => a.b._Time.CompareTo(b.b._Time));
+            var p = 0;
+            while (p < sort.Count)
+            {
+                var t = sort[p].b._Time - (p > 0 ? sort[p - 1].b._Time : 0);
+                if (t > 0)
+                    yield return new WaitForSeconds(t);
+                sort[p].a.mData = sort[p].b;
+                sort[p].a._Target.SendMessage(sort[p].a._Function, sort[p].a);
+                p++;
+            }
+            yield break;
+        }
     }
 }

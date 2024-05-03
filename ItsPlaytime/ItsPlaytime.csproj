@@ -176,6 +176,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Updater.exe" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="items.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)$(TargetFileName)" "D:\program\sod\BepInEx\plugins" /y</PostBuildEvent>

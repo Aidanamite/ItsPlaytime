@@ -1,0 +1,344 @@
+{
+  "array": [
+    {
+      "Action": "DEFAULT",
+      "Items": [ "BakingSodaVinegar", "DeathsongAmber" ],
+      "Result": "DissolvedAmber"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "LiquidChocolate", "Water" ],
+      "Result": "LiquidChocolateDiluted"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "LiquidChocolateDiluted", "Water" ],
+      "Result": "LiquidChocolateDiluted"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Sugar", "Water" ],
+      "Result": "SugarWater"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Salt", "Water" ],
+      "Result": "SaltWater"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Water", "LiquidOil" ],
+      "Result": "LiquidChocolateDiluted"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedGold", "MeltedIron" ],
+      "Result": "MeltedIronAlloy_G"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedSilver", "MeltedIron" ],
+      "Result": "MeltedIronAlloy_S"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedTin", "MeltedIron" ],
+      "Result": "MeltedIronAlloy_T"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedSilver", "MeltedGold" ],
+      "Result": "MeltedWhiteGold"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedTin", "MeltedGold" ],
+      "Result": "MeltedTinAlloy_G"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedTin", "MeltedSilver" ],
+      "Result": "MeltedTinAlloy_S"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "HydrochloricAcid", "Salt" ],
+      "Result": "HydrochloricSalt"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Sugar", "Lemon Juice" ],
+      "Result": "SugarLemonJuice"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Salt", "Lemon Juice" ],
+      "Result": "SaltLemonJuice"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Sugar", "Vinegar" ],
+      "Result": "SugarVinegar"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Salt", "Vinegar" ],
+      "Result": "SaltVinegar"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "BakingSoda", "Vinegar" ],
+      "Result": "BakingSodaVinegar"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Water", "BakingSoda" ],
+      "Result": "BakingSodaWater"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Salt", "BakingSoda" ],
+      "Result": "SaltBakingSoda"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "DeathsongAmber", "BakingSodaVinegar" ],
+      "Result": "DissolvedAmber"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "MeltedIron", "MeltedCopper" ],
+      "Result": "MeltedIronAlloy_T"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "SkullcapPlant", "Water", "LobeliaPlant" ],
+      "Result": "HerbalTea"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "BakingSodaVinegar", "MeltedAmber" ],
+      "Result": "DissolvedAmber"
+    },
+    {
+      "Action": "PESTLE",
+      "Items": [ "Water", "LiquidMixture" ],
+      "Result": "LiquidChocolateDiluted"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Iron", "MysteryRock" ],
+      "Result": "MeltedIronAlloy_M"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Sandstone", "MysteryRock" ],
+      "Result": "MeltedMysteryAlloy_S"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Iron", "Sandstone", "MysteryRock" ],
+      "Result": "MeltedGronckleIron"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Iron", "Sandstone" ],
+      "Result": "MeltedIronAlloy_Sandstone"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "Sandstone" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Cobalt", "Sandstone" ],
+      "Result": "LiquidGlass_Cobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Sandstone" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Cobalt", "Sandstone" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Chromite", "Sandstone" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "Cobalt", "Sandstone" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Iron", "Glass" ],
+      "Result": "MeltedIronAlloy_Sandstone"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "MysteryRock", "Glass" ],
+      "Result": "MeltedMysteryAlloy_S"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Iron", "MysteryRock", "Glass" ],
+      "Result": "MeltedIron"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "Glass" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Cobalt", "Glass" ],
+      "Result": "LiquidGlass_Cobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Glass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Cobalt", "Glass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Chromite", "Glass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "Cobalt", "Glass" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Cobalt", "Chromite" ],
+      "Result": "MeltedChromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Chromite" ],
+      "Result": "MeltedChromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Cobalt", "Chromite" ],
+      "Result": "MeltedChromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Sandstone", "GreenGlass" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "GreenGlass" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Cobalt", "GreenGlass" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "GreenGlass" ],
+      "Result": "LiquidGlass_Chromite"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "Cobalt" ],
+      "Result": "MeltedCobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Sandstone", "BlueGlass" ],
+      "Result": "LiquidGlass_Cobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "BlueGlass" ],
+      "Result": "LiquidGlass_Cobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Cobalt", "BlueGlass" ],
+      "Result": "LiquidGlass_Cobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "BlueGlass" ],
+      "Result": "LiquidGlass_Cobalt"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Sandstone", "PurpleGlass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Chromite", "PurpleGlass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Cobalt", "PurpleGlass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Manganese", "PurpleGlass" ],
+      "Result": "LiquidGlass_Manganese"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "MeltedIron", "MeltedGronckleIron" ],
+      "Result": "MeltedGronckleIronAlloy"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "FirewoodAsh", "Firewood" ],
+      "Result": "FirewoodAsh"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Dough", "Firewood" ],
+      "Result": "FirewoodAsh"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Bread", "Firewood" ],
+      "Result": "FirewoodAsh"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Gold", "Firewood" ],
+      "Result": "MeltedGold"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Dough", "FirewoodAsh" ],
+      "Result": "FirewoodAsh"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Bread", "FirewoodAsh" ],
+      "Result": "FirewoodAsh"
+    },
+    {
+      "Action": "FEATHER",
+      "Items": [ "Gold", "FirewoodAsh" ],
+      "Result": "MeltedGold"
+    }
+  ]
+}
